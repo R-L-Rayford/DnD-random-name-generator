@@ -1,15 +1,18 @@
 local background = display.newImage("background.jpg",160,230);
 
-local currentName = "";
+local currentFirstName = "";
+local currentLastName = "";
 local firstName = "";
 local lastName = "";
 local startupDD = "";
 local startupNG = "";
 local play = "";
+local restartText = "";
 local race = "";
 local gender = "";
 
 local newNameButton;
+local restartButton;
 local femaleButton;
 local maleButton;
 local elfButton;
@@ -89,8 +92,8 @@ local dwarfNames = {"Balderk","Battlehammer","Brawnanvil",
 local dragonBornNames = {"Delmirev","Kimbatuul","Myastan",
                          "Drachandion","Nemmonis","Norixius",
                          "Yarjerit","Kasendalor","Stendalioth"};
-local teiflingNames ={"Creep","Bringer of Despair","Embodiment of Fear",
-                      "Keeper of Sorrow","God of Torment","",
+local teiflingNames ={"Creep","Bringer of Despair","Stryker of Fear",
+                      "Keeper of Sorrow","God of Torment","Handler of Pain",
                       "Weary","Spiller of Blood","Bringer of Terror"};
 local halflingNames = {"Brushgather","Goodbarrel","Greenbottle",
                        "Highhill","Hilltopple","Tealeaf",
@@ -111,15 +114,13 @@ function GUI()
 
       startupDD = "D&D";
       displayStartup = display.newText(startupDD,160,40,"Old English Text MT",50);
-      displayStartup.width = 300;
       displayStartup.align = "center";
       displayStartup:setFillColor(1,.5,0)
 
       startupNG = "Name Generator";
-      displayStartup = display.newText(startupNG,160,90,"Old English Text MT",40);
-      displayStartup.width = 285;
-      displayStartup.align = "center";
-      displayStartup:setFillColor(1,.5,0)
+      displayStartupNG = display.newText(startupNG,160,90,"Old English Text MT",40);
+      displayStartupNG.align = "center";
+      displayStartupNG:setFillColor(1,.5,0)
 
   PickARace();
 
@@ -128,7 +129,6 @@ end
 function PickARace()
   local pickRace = "Pick a race!";
   displayRace = display.newText(pickRace,160,140,"Old English Text MT",30);
-  displayRace.width = 300;
   displayRace.align = "center";
   displayRace:setFillColor(0,0,0)
 
@@ -197,7 +197,6 @@ function PickARace()
 
       local elf = "Elf";
       displayElf = display.newText(elf,85,202,"Enchanted Land",20);
-      displayElf.width = 20;
       displayElf.align = "center";
       displayElf:setFillColor(0,0,0);
 
@@ -216,7 +215,6 @@ function PickARace()
 
       local orc = "Orc";
       displayOrc = display.newText(orc,85,262,"Enchanted Land",20);
-      displayOrc.width = 25;
       displayOrc.align = "center";
       displayOrc:setFillColor(0,0,0);
 
@@ -235,7 +233,6 @@ function PickARace()
 
         local human = "Human";
         displayHuman = display.newText(human,85,322,"Enchanted Land",20);
-        displayHuman.width = 40;
         displayHuman.align = "center";
         displayHuman:setFillColor(0,0,0);
 
@@ -254,7 +251,6 @@ function PickARace()
 
         local dwarf = "Dwarf";
         displayDwarf = display.newText(dwarf,85,382,"Enchanted Land",20);
-        displayDwarf.width = 40;
         displayDwarf.align = "center";
         displayDwarf:setFillColor(0,0,0);
 
@@ -273,7 +269,6 @@ function PickARace()
 
         local dragonborn = "Dragonborn";
         displayDragon = display.newText(dragonborn,235,202,"Enchanted Land",20);
-        displayDragon.width = 65;
         displayDragon.align = "center";
         displayDragon:setFillColor(0,0,0);
 
@@ -292,7 +287,6 @@ function PickARace()
 
         local teifling = "Teifling";
         displayTeifling = display.newText(teifling,235,262,"Enchanted Land",20);
-        displayTeifling.width = 45;
         displayTeifling.align = "center";
         displayTeifling:setFillColor(0,0,0);
 
@@ -311,7 +305,6 @@ function PickARace()
 
         local halfling = "Halfling";
         displayHalfling = display.newText(halfling,235,322,"Enchanted Land",20);
-        displayHalfling.width = 45;
         displayHalfling.align = "center";
         displayHalfling:setFillColor(0,0,0);
 
@@ -330,7 +323,6 @@ function PickARace()
 
         local gnome = "Gnome";
         displayGnome = display.newText(gnome,235,382,"Enchanted Land",20);
-        displayGnome.width = 40;
         displayGnome.align = "center";
         displayGnome:setFillColor(0,0,0);
 end
@@ -363,6 +355,11 @@ function racePicked(r)
 end
 
 function PickGender()
+  local pickGender = "Pick a gender!";
+  displayGender = display.newText(pickGender,160,140,"Old English Text MT",30);
+  displayGender.align = "center";
+  displayGender:setFillColor(0,0,0)
+
   local widget = require("widget");
 
   local function handleFemale(event)
@@ -392,7 +389,6 @@ function PickGender()
 
         local female = "Female";
         displayFemale = display.newText(female,85,200,"Enchanted Land",20);
-        displayFemale.width = 40;
         displayFemale.align = "center";
         displayFemale:setFillColor(0,0,0);
 
@@ -411,7 +407,6 @@ function PickGender()
 
         local male = "Male";
         displayMale = display.newText(male,235,200,"Enchanted Land",20);
-        displayMale.width = 40;
         displayMale.align = "center";
         displayMale:setFillColor(0,0,0);
 
@@ -423,14 +418,24 @@ function GenderPicked(g)
   maleButton:removeSelf();
   displayFemale:removeSelf();
   displayMale:removeSelf();
+  displayGender:removeSelf();
 
   gender = g;
   generateNewName();
 end
 
 function generateNewName()
-  if not (currentName == "") then
-    displayCurrentName:removeSelf();
+  if not (currentFirstName == "" and currentLastName == "") then
+    displayCurrentFirstName.isVisible = fasle;
+    displayCurrentLastName.isVisible = false;
+  end
+
+  if not (play == "" and restartText == "") then
+   displayPlay.isVisible = fasle;
+   displayRestart.isVisible = false;
+
+   newNameButton.isVisible = false;
+   restartButton.isVisible = false;
   end
 
   local widget = require("widget");
@@ -438,6 +443,12 @@ function generateNewName()
   local function handleNewName(event)
     if("ended" == event.phase) then
       generateNewName();
+    end
+  end
+
+  local function handleRestart(event)
+    if("ended" == event.phase) then
+      restart();
     end
   end
 
@@ -452,24 +463,123 @@ function generateNewName()
       newNameButton.width = 87;
       newNameButton.height = 30;
       newNameButton.x = 160;
-      newNameButton.y = 250;
+      newNameButton.y = 300;
 
-      if (race == "elf" and gender == "female") then
-        firstName = elfNamesFF[math.random(8)];
+      restartButton = widget.newButton(
+          {left=10,
+          top=20,
+          defaultFile="button05.png",
+          overFile="button06.png",
+          onEvent=handleRestart}
+          );
+
+          restartButton.width = 87;
+          restartButton.height = 30;
+          restartButton.x = 160;
+          restartButton.y = 350;
+
+      if (race == "elf") then
         lastName = elfNames[math.random(8)];
+        if (gender == "female") then
+          firstName = elfNamesFF[math.random(8)];
+        else
+          firstName = elfNamesMF[math.random(8)];
+        end
       end
 
-      currentName = firstName.."\n" .. lastName;
-      displayCurrentName = display.newText(currentName,160,170,"Old English Text MT",30);
-      displayCurrentName.width = 300;
-      displayCurrentName.align = "center";
-      displayCurrentName:setFillColor(0,0,0);
+      if (race == "orc") then
+        lastName = orcNames[math.random(8)];
+        if (gender == "female") then
+          firstName = orcNamesFF[math.random(8)];
+        else
+          firstName = orcNamesMF[math.random(8)];
+        end
+      end
+
+      if (race == "human") then
+        lastName = humanNames[math.random(8)];
+        if (gender == "female") then
+          firstName = humanNamesFF[math.random(8)];
+        else
+          firstName = humanNamesMF[math.random(8)];
+        end
+      end
+
+      if (race == "dwarf") then
+        lastName = dwarfNames[math.random(8)];
+        if (gender == "female") then
+          firstName = dwarfNamesFF[math.random(8)];
+        else
+          firstName = dwarfNamesMF[math.random(8)];
+        end
+      end
+
+      if (race == "dragonborn") then
+        lastName = dragonBornNames[math.random(8)];
+        if (gender == "female") then
+          firstName = dragonBornNamesFF[math.random(8)];
+        else
+          firstName = dragonBornNamesMF[math.random(8)];
+        end
+      end
+
+      if (race == "teifling") then
+        lastName = teiflingNames[math.random(8)];
+        if (gender == "female") then
+          firstName = teiflingNamesFF[math.random(8)];
+        else
+          firstName = teiflingNamesMF[math.random(8)];
+        end
+      end
+
+      if (race == "halfling") then
+        lastName = halflingNames[math.random(8)];
+        if (gender == "female") then
+          firstName = halflingNamesFF[math.random(8)];
+        else
+          firstName = halflingNamesMF[math.random(8)];
+        end
+      end
+
+      if (race == "gnome") then
+        lastName = gnomeNames[math.random(8)];
+        if (gender == "female") then
+          firstName = gnomeNamesFF[math.random(8)];
+        else
+          firstName = gnomeNamesMF[math.random(8)];
+        end
+      end
+
+      currentFirstName = firstName;
+      displayCurrentFirstName = display.newText(currentFirstName,160,190,"Medieval Scroll of Wisdom",30);
+      displayCurrentFirstName.align = "center";
+      displayCurrentFirstName:setFillColor(0,0,0);
+
+      currentLastName = lastName;
+      displayCurrentLastName = display.newText(currentLastName,160,240,"Medieval Scroll of Wisdom",30);
+      displayCurrentLastName.align = "center";
+      displayCurrentLastName:setFillColor(0,0,0);
 
       play = "New Name";
-      displayPlay = display.newText(play,160,252,"Enchanted Land",20);
-      displayPlay.width = 60;
+      displayPlay = display.newText(play,160,302,"Enchanted Land",20);
       displayPlay.align = "center";
       displayPlay:setFillColor(0,0,0);
+
+      restartText = "Restart";
+      displayRestart = display.newText(restartText,160,352,"Enchanted Land",20);
+      displayRestart.align = "center";
+      displayRestart:setFillColor(0,0,0);
+end
+
+function restart()
+  newNameButton.isVisible = false;
+  restartButton.isVisible = false;
+  displayPlay.isVisible = false;
+  displayRestart.isVisible = false;
+  displayCurrentFirstName.isVisible = false;
+  displayCurrentLastName.isVisible = false;
+
+  setUp();
 end
 
 setUp();
